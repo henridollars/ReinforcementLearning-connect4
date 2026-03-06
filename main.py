@@ -1,17 +1,27 @@
+import random
+
 from env.connect4_env import Connect4Env
+from opponents.random_opponent import RandomOpponent
+
 
 env = Connect4Env()
-env.reset()
+opponent = RandomOpponent()
 
-moves = [0, 1, 0, 1, 0, 1, 0]
+state = env.reset()
 player = 1
 
 print("Initial board:")
 env.render()
 
-for move in moves:
-    state, reward, done, info = env.step(move, player)
-    print(f"\nPlayer {player} plays column {move}")
+while not env.done:
+    if player == 1:
+        action = random.choice(env.get_legal_actions())
+    else:
+        action = opponent.act(env)
+
+    state, reward, done, info = env.step(action, player)
+
+    print(f"\nPlayer {player} plays column {action}")
     env.render()
 
     if done:
