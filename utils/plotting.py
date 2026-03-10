@@ -101,6 +101,8 @@ def plot_all_phases(checkpoint_dir: str = "checkpoints", save_path: str = None):
 if __name__ == "__main__":
     import sys
     if len(sys.argv) > 1:
-        plot_learning_curve(sys.argv[1], save_path=sys.argv[2] if len(sys.argv) > 2 else None)
+        # plot_learning_curve <csv_path> [<out_png>]
+        out = sys.argv[2] if len(sys.argv) > 2 else sys.argv[1].replace(".csv", ".png")
+        plot_learning_curve(sys.argv[1], save_path=out)
     else:
-        plot_all_phases()
+        plot_all_phases(save_path="checkpoints/learning_curves.png")
