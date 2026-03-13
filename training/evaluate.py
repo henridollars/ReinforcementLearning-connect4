@@ -28,7 +28,7 @@ def _play_game(env, agent, opponent, agent_player: int) -> dict:
 
     while not env.done:
         legal  = env.get_legal_actions()
-        action = agent.act(state, legal, epsilon=0.0)
+        action = agent.act(state, legal, epsilon=0.05)
         next_raw, _, done, info = env.step(action, agent_player)
         moves += 1
 
@@ -71,6 +71,8 @@ def evaluate(agent, opponent, n_games=200, seed=None, verbose=False):
     illegal_moves = 0
     total_agent_moves = 0
     game_lengths = []
+    wins_as = {1: 0, -1: 0}
+    losses_as = {1: 0, -1: 0}
 
     half = n_games // 2
     # First half: agent goes first; second half: agent goes second
@@ -89,10 +91,13 @@ def evaluate(agent, opponent, n_games=200, seed=None, verbose=False):
         if result["illegal"]:
             illegal_moves += 1
             losses += 1
+            losses_as[agent_player] += 1
         elif result["winner"] == agent_player:
             wins += 1
+            wins_as[agent_player] += 1
         elif result["winner"] == -agent_player:
             losses += 1
+            losses_as[agent_player] += 1
         else:
             draws += 1
 
@@ -124,6 +129,10 @@ def evaluate(agent, opponent, n_games=200, seed=None, verbose=False):
         print(f"  Illegal-move rate : {illegal_move_rate:.4%}  "
               f"({illegal_moves} / {total_agent_moves} agent moves)")
         print(f"  Avg game length   : {avg_game_length:.1f} moves")
+        print(f"  As P1 (first) : {wins_as[1]}W / {losses_as[1]}L  "
+              f"({wins_as[1]/half:.0%} win rate)")
+        print(f"  As P2 (second): {wins_as[-1]}W / {losses_as[-1]}L  "
+              f"({wins_as[-1]/(n_games-half):.0%} win rate)")
 
     return metrics
 
